@@ -33,6 +33,9 @@ const localWebSocketURL = getLocalWebSocketURL();
 
 const demoMode = args["demo"] || false;
 
+// Ensure proper connection string format for PostgreSQL
+const connectionString = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?sslmode=require&connect_timeout=10&application_name=uptime-kuma-debug`;
+
 module.exports = {
     args,
     hostname,
@@ -43,4 +46,5 @@ module.exports = {
     isSSL,
     localWebSocketURL,
     demoMode,
+    connectionString,
 };

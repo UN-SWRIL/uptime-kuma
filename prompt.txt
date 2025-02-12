@@ -1,0 +1,6 @@
+@src @src @server @public @config @index.html @tsconfig.json @Dockerfile @compose.yaml @db  app still not connecting to database
+
+
+let's restart from scratch. I have applied "terraform destroy". Let's use EC2 instead as defined here, but, use terraform to deploy, learning from this site: @https://iamunnip.medium.com/uptime-kuma-on-amazon-ec2-an-open-source-monitoring-tool-4fa1c73ad718 
+
+let's restart from scratch. I have applied "terraform destroy". Let's use EC2 instead as defined here, but, use terraform to deploy, learning from this site: @https://iamunnip.medium.com/uptime-kuma-on-amazon-ec2-an-open-source-monitoring-tool-4fa1c73ad718

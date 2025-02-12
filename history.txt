@@ -1,0 +1,46 @@
+# Uptime Kuma Deployment History
+
+## 2024-02-10 - Initial Troubleshooting
+
+### Issues Found:
+1. Environment variables not being passed correctly to container
+2. Database connectivity failing
+3. ALB health checks failing
+4. Container unable to start properly
+
+### Changes Made:
+1. Updated task definition:
+   - Changed from entryPoint to command
+   - Added workingDirectory
+   - Added POSTGRES_* environment variables
+
+2. Updated Dockerfile:
+   - Fixed file permissions
+   - Changed working directory
+   - Removed ENTRYPOINT
+
+3. Updated init script:
+   - Added environment variable validation
+   - Added export of DB_* variables
+   - Added proper error handling
+
+4. Updated ECS service:
+   - Moved to private subnets
+   - Removed public IP assignment
+
+### Current Status:
+- ALB health checks still failing
+- Database connectivity still failing
+- Container logs show environment variables not being interpolated
+
+### Next Steps:
+1. Verify security group rules between ALB, ECS, and RDS
+2. Check container startup sequence
+3. Validate environment variable handling
+4. Review ALB health check configuration
+
+### Lessons Learned:
+1. Environment variables need both DB_* and POSTGRES_* prefixes
+2. Container needs proper working directory setup
+3. Private subnets require proper NAT gateway setup
+4. Security groups need careful review 

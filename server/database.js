@@ -11,6 +11,7 @@ const { UptimeCalculator } = require("./uptime-calculator");
 const dayjs = require("dayjs");
 const { SimpleMigrationServer } = require("./utils/simple-migration-server");
 const KumaColumnCompiler = require("./utils/knex/lib/dialects/mysql2/schema/mysql2-columncompiler");
+const { Client } = require('pg');
 
 /**
  * Database & App Data Folder
@@ -911,4 +912,51 @@ class Database {
 
 }
 
-module.exports = Database;
+async function testDatabaseConnection() {
+    console.log("=== COMPREHENSIVE DATABASE CONNECTION TEST ===");
+    console.log(`Attempting to connect with:
+    Host: ${process.env.DB_HOST}
+    Port: ${process.env.DB_PORT}
+    User: ${process.env.DB_USER}
+    Database: ${process.env.DB_NAME}
+    `);
+
+    try {
+        const client = new Client({
+            host: process.env.DB_HOST,
+            port: parseInt(process.env.DB_PORT || '5432', 10),
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+            ssl: {
+                rejectUnauthorized: false  // Use cautiously in production
+            },
+            connectionTimeoutMillis: 10000,  // 10 seconds
+            query_timeout: 10000,            // 10 seconds
+            statement_timeout: 10000         // 10 seconds
+        });
+
+        console.log("Attempting connection...");
+        await client.connect();
+        console.log("✅ Database connection successful!");
+
+        const result = await client.query('SELECT NOW()');
+        console.log("Server time:", result.rows[0].now);
+
+        await client.end();
+        return true;
+    } catch (error) {
+        console.error("❌ Database Connection Error:", {
+            message: error.message,
+            name: error.name,
+            code: error.code,
+            stack: error.stack
+        });
+        return false;
+    }
+}
+
+module.exports = {
+    testDatabaseConnection,
+    Database,
+};

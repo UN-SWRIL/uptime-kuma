@@ -39,6 +39,7 @@ if (!semver.satisfies(nodeVersion, requiredNodeVersions)) {
 const args = require("args-parser")(process.argv);
 const { sleep, log, getRandomInt, genSecret, isDev } = require("../src/util");
 const config = require("./config");
+const { testDatabaseConnection } = require('./database');
 
 log.debug("server", "Arguments");
 log.debug("server", args);
@@ -168,7 +169,20 @@ app.use(function (req, res, next) {
  */
 let needSetup = false;
 
-(async () => {
+async function initializeApplication() {
+    console.log("=== APPLICATION INITIALIZATION ===");
+    
+    // Log all environment variables for debugging
+    console.log("Environment Variables:", JSON.stringify(process.env, null, 2));
+
+    // Test database connection before starting server
+    const dbConnected = await testDatabaseConnection();
+    
+    if (!dbConnected) {
+        console.error("FATAL: Could not establish database connection");
+        process.exit(1);
+    }
+
     // Create a data directory
     Database.initDataDir(args);
 
@@ -1621,7 +1635,9 @@ let needSetup = false;
     // Start cloudflared at the end if configured
     await cloudflaredAutoStart(cloudflaredToken);
 
-})();
+}
+
+initializeApplication();
 
 /**
  * Update notifications for a given monitor
