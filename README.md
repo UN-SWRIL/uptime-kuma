@@ -2,6 +2,14 @@
     <img src="./public/icon.svg" width="128" alt="" />
 </div>
 
+### 👥 Add User via Command Line
+
+You can add a user via command line using the `add-user.sh` script. Before running the script:
+
+1. Update the script with your EC2 instance's SSH key path: `salman-dev.pem` (change the key name in the script to match your key)
+2. Run the script: `chmod +x add-user.sh && ./add-user.sh`
+
+
 # Uptime Kuma
 
 Uptime Kuma is an easy-to-use self-hosted monitoring tool.
