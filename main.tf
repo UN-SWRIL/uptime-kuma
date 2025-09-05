@@ -10,6 +10,7 @@ resource "aws_instance" "uptime_kuma" {
 
   vpc_security_group_ids = [aws_security_group.uptime_kuma.id]
   key_name              = var.key_name
+  iam_instance_profile  = aws_iam_instance_profile.ec2_backup_profile.name
 
   root_block_device {
     volume_size = var.volume_size

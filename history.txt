@@ -43,4 +43,80 @@
 1. Environment variables need both DB_* and POSTGRES_* prefixes
 2. Container needs proper working directory setup
 3. Private subnets require proper NAT gateway setup
-4. Security groups need careful review 
+4. Security groups need careful review
+
+## 2025-01-06 - Server Disk Space Analysis
+
+### Current Infrastructure:
+- **Server Type**: AWS EC2 t2.micro instance
+- **Total Disk Space**: 10 GB (GP3 volume)
+- **Current Usage**: 5.6 GB used, 4.0 GB available (58% utilized)
+- **File System**: 9.6 GB usable space (formatting overhead)
+
+### Docker Storage Breakdown:
+- **Docker Images**: 440 MB (uptime-kuma image)
+- **Docker Containers**: 217 KB (running container)
+- **Docker Volumes**: 192.5 MB (uptime-kuma data volume)
+- **Uptime-Kuma Data**: 184 MB (actual application data)
+
+### Storage Analysis:
+- **Available for Backups**: ~4 GB remaining
+- **Application Growth**: Uptime-kuma data is relatively small (184 MB)
+- **System Overhead**: ~5.4 GB used by OS, Docker, and system files
+
+### Backup Storage Capacity:
+Based on current 184 MB application data:
+- **8 weekly backups**: ~1.5 GB (compressed)
+- **Sufficient space**: Yes, plenty of room for backup retention
+- **Growth allowance**: Can handle 10x data growth comfortably
+
+## 2025-01-06 - UN-SWRIL Repository Backup System Implementation
+
+### System Overview:
+- **Disk Expansion**: Successfully expanded from 10GB to 100GB
+- **Available Space**: 97GB total, 94GB free after backups
+- **Backup Method**: Compressed tar.gz archives with 8-week rolling retention
+
+### Backup Configuration:
+- **GitHub Authentication**: Personal Access Token configured
+- **Repositories**: 12 total (2 public, 10 private)
+- **Current Backup Size**: 2.9GB per backup
+- **Estimated 8-week Storage**: ~23GB (well within capacity)
+- **Schedule**: Weekly backups every Sunday at 2:00 AM
+
+### Repository Backup Sizes:
+- **UN-MOMAH**: 1.4GB (largest - AI Chatbot)
+- **un-qol-website**: 1.2GB (second largest - main website)
+- **qoli-data-pipeline**: 98MB
+- **un-qol-app**: 63MB
+- **un-qol-visualize**: 225MB
+- **qoli-learning**: 15MB
+- **un-qoli-infra**: 2.2MB
+- **community**: 1.7MB
+- **un-qol-survey-server**: 752KB
+- **mattermost-on-aws**: 36KB
+
+### Notification System:
+- **Method**: AWS SNS (Simple Notification Service)
+- **Recipients**: salman.naqvi@gmail.com, diptobiswas0007@gmail.com
+- **Triggers**: Backup failures only
+- **IAM Role**: ec2-backup-role with SNS publish permissions
+
+### Infrastructure Components:
+- **EC2 Instance**: t2.micro with 100GB GP3 volume
+- **IAM Role**: ec2-backup-role for AWS service access
+- **SNS Topic**: un-swril-backup-notifications
+- **Backup Location**: /var/backups/un-swril/
+- **Log Files**: /var/log/un-swril-backup.log
+
+### Operational Status:
+- ✅ All 12 repositories successfully backed up
+- ✅ SNS notifications tested and working
+- ✅ Weekly cron job scheduled
+- ✅ 8-week retention policy implemented
+- ✅ Sufficient storage capacity confirmed
+
+### Next Steps:
+- Monitor first few automated backup cycles
+- Set up disk usage monitoring alerts
+- Consider implementing backup integrity checks 

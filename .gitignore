@@ -36,6 +36,9 @@ extra/exe-builder/obj
 crash.log
 crash.*.log
 
+.env
+.env.local
+*.env*
 
 
 # Ignore override files as they are usually used for local development

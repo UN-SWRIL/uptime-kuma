@@ -4,7 +4,7 @@ key_name   = "salman-dev"
 
 # EC2 configuration
 instance_type = "t2.micro"
-volume_size   = 10
+volume_size   = 100
 environment   = "production"
 
 # Database configuration
