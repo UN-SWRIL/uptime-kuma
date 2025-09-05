@@ -6,16 +6,28 @@
 # Email notifications on failure
 #########################################
 
-# Configuration
-# GitHub token should be set via environment variable or GitHub CLI authentication
-# GITHUB_TOKEN is automatically used by gh CLI when authenticated
-ORG_NAME="UN-SWRIL"
-BACKUP_DIR="/var/backups/un-swril"
-LOG_FILE="/var/log/un-swril-backup.log"
-RETENTION_WEEKS=8
-SNS_TOPIC_ARN="arn:aws:sns:us-east-1:651706782157:un-swril-backup-notifications"
-AWS_REGION="us-east-1"
+# Load environment variables from .env file if it exists
+if [ -f "$(dirname "$0")/.env" ]; then
+    export $(grep -v '^#' "$(dirname "$0")/.env" | xargs)
+elif [ -f "/usr/local/bin/.env" ]; then
+    export $(grep -v '^#' "/usr/local/bin/.env" | xargs)
+elif [ -f "/opt/backup/.env" ]; then
+    export $(grep -v '^#' "/opt/backup/.env" | xargs)
+fi
+
+# Configuration - use environment variables with fallback defaults
+ORG_NAME="${BACKUP_ORG_NAME:-UN-SWRIL}"
+BACKUP_DIR="${BACKUP_DIR:-/var/backups/un-swril}"
+LOG_FILE="${BACKUP_LOG_FILE:-/var/log/un-swril-backup.log}"
+RETENTION_WEEKS="${BACKUP_RETENTION_WEEKS:-8}"
+SNS_TOPIC_ARN="${BACKUP_SNS_TOPIC_ARN:-arn:aws:sns:us-east-1:651706782157:un-swril-backup-notifications}"
+AWS_REGION="${BACKUP_AWS_REGION:-us-east-1}"
 SCRIPT_NAME="UN-SWRIL Repository Backup"
+
+# GitHub token - prefer environment variable, fallback to GitHub CLI authentication
+if [ -n "$GITHUB_TOKEN" ]; then
+    export GITHUB_TOKEN="$GITHUB_TOKEN"
+fi
 
 # Colors for output
 RED='\033[0;31m'
