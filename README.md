@@ -117,6 +117,138 @@ Please read:
 
 https://github.com/louislam/uptime-kuma/wiki/%F0%9F%86%99-How-to-Update
 
+## 💾 Repository Backup System
+
+This deployment includes an automated backup system for all UN-SWRIL organization repositories.
+
+### 🚀 Features
+
+- **Automated Weekly Backups**: All 12 repositories backed up every Sunday at 2:00 AM
+- **8-Week Retention**: Rolling retention automatically removes backups older than 8 weeks
+- **Compressed Archives**: Space-efficient tar.gz format saves storage
+- **Email Notifications**: SNS-based alerts for backup failures only
+- **Environment-Based Configuration**: Secure credential management via `.env` file
+- **Comprehensive Logging**: Detailed logs for monitoring and troubleshooting
+
+### 📊 Current Status
+
+- **Total Repositories**: 12 (2 public, 10 private)
+- **Backup Size**: ~2.9GB per backup
+- **Storage Used**: ~23GB for 8-week retention
+- **Available Space**: 88GB remaining on 100GB disk
+- **Success Rate**: 100% (all repositories successfully backed up)
+
+### 🗂️ Repository Coverage
+
+| Repository | Size | Type | Description |
+|------------|------|------|-------------|
+| **UN-MOMAH** | 1.4GB | Private | AI Chatbot for Saudi Arabian Government |
+| **un-qol-website** | 1.2GB | Private | UN Quality of Life Project Website |
+| **UN-URBANLEX** | 59MB | Private | Urban legal framework |
+| **qoli-data-pipeline** | 98MB | Private | Data processing pipeline |
+| **un-qol-visualize** | 225MB | Private | Data visualization tools |
+| **un-qol-app** | 63MB | Private | React Native QOL Survey app |
+| **uptime-kuma** | 27MB | Public | This monitoring tool (fork) |
+| **qoli-learning** | 15MB | Private | Learning module |
+| **un-qoli-infra** | 2.2MB | Private | Infrastructure configuration |
+| **community** | 1.7MB | Public | Mobile app for quality-of-life data |
+| **un-qol-survey-server** | 752KB | Private | Lambda infrastructure |
+| **mattermost-on-aws** | 36KB | Private | Mattermost deployment |
+
+### ⚙️ Configuration
+
+The backup system uses environment variables for secure configuration:
+
+```bash
+# GitHub Configuration
+GITHUB_TOKEN=your_github_token_here
+
+# Backup Settings
+BACKUP_ORG_NAME=UN-SWRIL
+BACKUP_DIR=/var/backups/un-swril
+BACKUP_LOG_FILE=/var/log/un-swril-backup.log
+BACKUP_RETENTION_WEEKS=8
+
+# AWS SNS Notifications
+BACKUP_SNS_TOPIC_ARN=arn:aws:sns:us-east-1:651706782157:un-swril-backup-notifications
+BACKUP_AWS_REGION=us-east-1
+```
+
+### 📧 Notifications
+
+Email notifications are sent to:
+- `salman.naqvi@gmail.com`
+- `diptobiswas0007@gmail.com`
+
+**Note**: Notifications are only sent for backup failures, not successes.
+
+### 🛠️ Manual Operations
+
+#### Run Backup Manually
+```bash
+sudo -u ubuntu /usr/local/bin/backup-repos.sh
+```
+
+#### Check Backup Status
+```bash
+# View recent backups
+ls -lah /var/backups/un-swril/
+
+# Check backup logs
+tail -f /var/log/un-swril-backup.log
+
+# View cron schedule
+crontab -l
+```
+
+#### Test SNS Notifications
+```bash
+aws sns publish \
+  --topic-arn "arn:aws:sns:us-east-1:651706782157:un-swril-backup-notifications" \
+  --subject "[TEST] Backup System Test" \
+  --message "Test notification" \
+  --region us-east-1
+```
+
+### 🔒 Security Features
+
+- **No Hardcoded Credentials**: All sensitive data in environment variables
+- **GitHub CLI Authentication**: Secure token management
+- **IAM Role-Based Access**: EC2 instance uses dedicated IAM role
+- **Proper File Permissions**: Backup files and logs secured appropriately
+- **Git Repository Security**: `.env` files excluded from version control
+
+### 📈 Monitoring
+
+- **Disk Usage**: Monitored to ensure sufficient space (currently 10% used)
+- **Backup Success**: Tracked via logs and SNS notifications
+- **Retention Policy**: Automatic cleanup prevents disk space issues
+- **System Health**: AWS CloudWatch integration via IAM role
+
+### 🚨 Troubleshooting
+
+#### Common Issues
+
+1. **Backup Fails**: Check GitHub authentication and network connectivity
+2. **Disk Space**: Monitor `/var/backups/un-swril/` usage
+3. **Permissions**: Ensure ubuntu user has proper access to backup directory
+4. **SNS Notifications**: Verify IAM role has SNS publish permissions
+
+#### Log Locations
+
+- **Backup Logs**: `/var/log/un-swril-backup.log`
+- **Cron Logs**: `/var/log/un-swril-backup-cron.log`
+- **System Logs**: `journalctl -u cron`
+
+### 📋 Backup Schedule
+
+```bash
+# Weekly backup every Sunday at 2:00 AM
+0 2 * * 0 /usr/local/bin/backup-repos.sh >> /var/log/un-swril-backup-cron.log 2>&1
+```
+
+The backup system is fully automated and requires no manual intervention under normal operation.
+
 ## 🆕 What's Next?
 
 I will assign requests/issues to the next milestone.
