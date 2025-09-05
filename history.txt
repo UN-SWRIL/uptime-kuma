@@ -116,6 +116,22 @@ Based on current 184 MB application data:
 - ✅ 8-week retention policy implemented
 - ✅ Sufficient storage capacity confirmed
 
+### Security Improvements:
+- ✅ Moved all sensitive credentials to .env file
+- ✅ Environment variable configuration with fallbacks
+- ✅ Removed hardcoded tokens from source code
+- ✅ GitHub push protection compliance
+- ✅ Proper file permissions (644) for .env file
+
+### Environment Variables:
+- **GITHUB_TOKEN**: GitHub authentication token
+- **BACKUP_ORG_NAME**: Organization name (default: UN-SWRIL)
+- **BACKUP_DIR**: Backup directory (default: /var/backups/un-swril)
+- **BACKUP_LOG_FILE**: Log file location (default: /var/log/un-swril-backup.log)
+- **BACKUP_RETENTION_WEEKS**: Retention period (default: 8)
+- **BACKUP_SNS_TOPIC_ARN**: SNS topic for notifications
+- **BACKUP_AWS_REGION**: AWS region (default: us-east-1)
+
 ### Next Steps:
 - Monitor first few automated backup cycles
 - Set up disk usage monitoring alerts
